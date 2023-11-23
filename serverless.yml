@@ -20,15 +20,43 @@ functions:
     handler: lambdaFunctions/signUp/index.handler
     events:
       - httpApi:
-          path: '/auth/signUp'
+          path: '/api/user/signUp'
           method: POST
 
   login:
     handler: lambdaFunctions/login/index.handler
     events:
       - httpApi:
-          path: '/auth/login'
+          path: '/api/user/login'
           method: POST
+
+  postNote:
+    handler: lambdaFunctions/postNote/index.handler
+    events:
+      - httpApi:
+          path: '/api/notes'
+          method: POST
+
+  getNotes:
+    handler: lambdaFunctions/getNotes/index.handler
+    events:
+      - httpApi:
+          path: '/api/notes'
+          method: GET
+
+  deleteNote:
+    handler: lambdaFunctions/deleteNote/index.handler
+    events:
+      - httpApi:
+          path: '/api/notes'
+          method: DELETE
+  
+  updateNote:
+    handler: lambdaFunctions/updateNote/index.handler
+    events:
+      - httpApi:
+          path: '/api/notes'
+          method: PUT
 
 resources:
   Resources:
