@@ -1,0 +1,14 @@
+I have set up the serverless project.
+Defined db-tables.
+Added stumps for (most of) the required functions.
+Added endpoints in serverless.yml
+Added boilerplate code for signUp and login, and sendResponse.
+
+Switched to postNote branch.
+
+Fixed import errors
+
+Deployed to aws:
+- signUp works
+-logIn works
+(Not much error handling yet)
