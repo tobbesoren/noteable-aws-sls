@@ -16,27 +16,42 @@ package:
   individually: true
 
 functions:
-  function1:
-    handler: index.handler
+  signUp:
+    handler: lambdaFunctions/signUp/index.handler
+    events:
+      - httpApi:
+          path: '/auth/signUp'
+          method: POST
+
+  login:
+    handler: lambdaFunctions/login/index.handler
+    events:
+      - httpApi:
+          path: '/auth/login'
+          method: POST
 
 resources:
   Resources:
-    notableNotesDb:
+    noteableNotesDb:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: notableNotes
+        TableName: noteableNotes
         AttributeDefinitions:
-          - AttributeName: id
+          - AttributeName: userId
+            AttributeType: S
+          - AttributeName: noteId
             AttributeType: S
         KeySchema:
-          - AttributeName: id
+          - AttributeName: userId
             KeyType: HASH
+          - AttributeName: noteId
+            KeyType: RANGE
         BillingMode: PAY_PER_REQUEST
 
-    notableUsersDb:
+    noteableUsersDb:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: notableAccounts
+        TableName: noteableAccounts
         AttributeDefinitions:
           - AttributeName: username
             AttributeType: S
