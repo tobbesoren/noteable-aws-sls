@@ -12,3 +12,13 @@ Deployed to aws:
 - signUp works
 -logIn works
 (Not much error handling yet)
+
+Added basic postNote function.
+Deployed
+Committed  and pushed to postNote branch:
+postNoteAddedFixedImportErrors
+
+Tested with Insomnia:
+Now it is possible to post a note
+
+Merged and deleted branch postNote
