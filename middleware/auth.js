@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken");
+const { secret } = require("../secret")
 
 const validateToken = {
   before: async (request) => {
@@ -7,7 +8,7 @@ const validateToken = {
 
       if (!token) throw new Error();
 
-      const data = jwt.verify(token, "aabbcc");
+      const data = jwt.verify(token, secret);
 
       request.event.id = data.id;
       request.event.username = data.username;
