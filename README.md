@@ -1,72 +1,58 @@
-<!--
-title: 'AWS NodeJS Example'
-description: 'This template demonstrates how to deploy a NodeJS function running on AWS Lambda using the traditional Serverless Framework.'
-layout: Doc
-framework: v3
-platform: AWS
-language: nodeJS
-priority: 1
-authorLink: 'https://github.com/serverless'
-authorName: 'Serverless, inc.'
-authorAvatar: 'https://avatars1.githubusercontent.com/u/13742415?s=200&v=4'
--->
+# notes API
 
+## Instruktioner
 
-# Serverless Framework AWS NodeJS Example
+Du ska i denna övning göra ett API för att spara anteckningar. Anteckningarna är kopplade till specifik användare, så det ska bara gå att komma åt anteckningar som är kopplade till den just nu inloggade användaren. Du ska använda middy som middleware för att skydda de endpoints som kräver inloggning.
 
-This template demonstrates how to deploy a NodeJS function running on AWS Lambda using the traditional Serverless Framework. The deployed function does not include any event definitions as well as any kind of persistence (database). For more advanced configurations check out the [examples repo](https://github.com/serverless/examples/) which includes integrations with SQS, DynamoDB or examples of functions that are triggered in `cron`-like manner. For details about configuration of specific `events`, please refer to our [documentation](https://www.serverless.com/framework/docs/providers/aws/events/).
+### Tekniker
 
-## Usage
+API Gateway
+Lambda
+Dynamodb
+Middy
 
-### Deployment
+### Endpoints
 
-In order to deploy the example, you need to run the following command:
+Alla endpoints förutom skapa konto och logga in kräver att man är inloggad.
 
-```
-$ serverless deploy
-```
+|  Endpoint |  Metod |  Beskrivning |
+|---|---|---|
+| `/api/notes` | `GET` | Hämta anteckningar |
+| `/api/notes` | `POST` | Spara en anteckning |
+| `/api/notes` | `PUT` | Ändra en anteckning |
+| `/api/notes` | `DELETE` | Ta bort en anteckning |
+| `/api/user/signup` | `POST` | Skapa konto |
+| `/api/user/login` | `POST` | Logga in |
 
-After running deploy, you should see output similar to:
+**Note - objekt**
 
-```bash
-Deploying aws-node-project to stage dev (us-east-1)
+| Nyckel | Värde | Beskrivning |
+|---|---|---|
+| `id` | `String` | Ett genererat ID för denna anteckning. |
+| `title` | `String` |  Titeln på anteckningen. Max 50 tecken. |
+| `text` | `String` | Själva anteckningstexten, max 300 tecken. |
+| `createdAt` | `Date` | När anteckningen skapades. |
+| `modifiedAt` | `Date` | När anteckningen sist modifierades. |
 
-✔ Service deployed to stack aws-node-project-dev (112s)
+### Felhantering
 
-functions:
-  hello: aws-node-project-dev-hello (1.5 kB)
-```
+Alla API-resurser ska returnera JSON och/eller en HTTP statuskod:
 
-### Invocation
+**200 (OK)** - Om servern lyckats med att göra det som resursen motsvarar.
 
-After successful deployment, you can invoke the deployed function by using the following command:
+**400 (Bad request)** - Om requestet är felaktigt gjort, så att servern inte kan fortsätta. Exempel: Att frontend skickar med 
+felaktig data i body till servern.
 
-```bash
-serverless invoke --function hello
-```
+**401 (Unauthorized)** - Om giltig inloggning inte finns
 
-Which should result in response similar to the following:
+**404 (Not found)** - Om resursen eller objektet som efterfrågas inte finns.
 
-```json
-{
-    "statusCode": 200,
-    "body": "{\n  \"message\": \"Go Serverless v3.0! Your function executed successfully!\",\n  \"input\": {}\n}"
-}
-```
+**500 (internal server error)** - Om ett fel inträffar på servern. Använd catch för att fånga det.
 
-### Local development
+### Betygskriterier
 
-You can invoke your function locally by using the following command:
+**G:** 
+För godkänta ska API:et fungera enligt ovan. 
 
-```bash
-serverless invoke local --function hello
-```
-
-Which should result in response similar to the following:
-
-```
-{
-    "statusCode": 200,
-    "body": "{\n  \"message\": \"Go Serverless v3.0! Your function executed successfully!\",\n  \"input\": \"\"\n}"
-}
-```
+**VG:** 
+För vg ska dessutom en återställningsfunktionalitet implementeras: Skapa funktionalitet för användare att återställa borttagna anteckningar eller ångra ändringar genom att införa en återställningspapperskorg eller en återställningsmekanism för att återvinna borttagna data. Alla indata till alla endpoints ska även valideras.
