@@ -1,6 +1,6 @@
 const AWS = require("aws-sdk");
 const { nanoid } = require("nanoid");
-const { sendResponse } = require("../../responses");
+const { sendResponse } = require("../../responses/sendResponse");
 const bcrypt = require("bcryptjs");
 const db = new AWS.DynamoDB.DocumentClient();
 
