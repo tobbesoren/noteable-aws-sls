@@ -1,0 +1,46 @@
+service: noteable-aws-sls
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  profile: tobbesoren_test
+  region: eu-north-1
+  iam:
+    role: arn:aws:iam::564920371550:role/tobbesoren-ma22
+
+plugins:
+  - serverless-webpack
+
+package:
+  individually: true
+
+functions:
+  function1:
+    handler: index.handler
+
+resources:
+  Resources:
+    notableNotesDb:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: notableNotes
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
+
+    notableUsersDb:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: notableAccounts
+        AttributeDefinitions:
+          - AttributeName: username
+            AttributeType: S
+        KeySchema:
+          - AttributeName: username
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
