@@ -22,3 +22,13 @@ Tested with Insomnia:
 Now it is possible to post a note
 
 Merged and deleted branch postNote
+
+Switched to getNotes branch
+
+Added getNotes
+Added verifyToken
+
+Committed and pushed to getNotes branch:
+addedGetNotesAndVerifyToken
+
+Merged and deleted getNotes branch
