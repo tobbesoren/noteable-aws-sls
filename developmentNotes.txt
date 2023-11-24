@@ -103,4 +103,6 @@ Added a getArchivedNotes function.
 
 upDateNote works! I changed the endpoint to /api/notes/{noteId}, though.
 
-Next: deleteNote
+deleteArchivedNote seems to work, too!
+
+I should add a check so only an unarchived note can be updated!

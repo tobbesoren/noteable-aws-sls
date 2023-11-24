@@ -72,6 +72,13 @@ functions:
           path: '/api/notes/{noteId}'
           method: PUT
 
+  deleteArchivedNote:
+    handler: lambdaFunctions/deleteArchivedNote/index.handler
+    events:
+      - httpApi:
+          path: '/api/notes/archived'
+          method: DELETE  
+
 resources:
   Resources:
     noteableNotesDb:
