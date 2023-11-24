@@ -15,9 +15,10 @@ const getNotes = async (event, context) => {
     const { Items } = await db
       .scan({
         TableName: "noteableNotes",
-        FilterExpression: "userId = :userId",
+        FilterExpression: "userId = :userId AND isDeleted = :isDeleted",
         ExpressionAttributeValues: {
           ":userId": userId,
+          ":isDeleted": false,
         },
       })
       .promise();

@@ -21,6 +21,7 @@ const postNote = async (event, context) => {
   note.userId = userId;
   note.createdAt = createdAt;
   note.modifiedAt = createdAt;
+  note.isDeleted = false;
 
   try {
     await db

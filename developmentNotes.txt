@@ -93,3 +93,5 @@ And fixed the dates, now an isoString.
 Now notes gets the logged in user's userid.
 
 I fixed getNotes to only fetch the logged in user's notes.
+
+Added isDeleted property and updated getNotes to only get notes that isn't deleted.
