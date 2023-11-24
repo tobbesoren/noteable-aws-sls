@@ -1,3 +1,6 @@
+Here I try to jot down what I do in the project, thoughts on what to do later and different approaches to problems I encounter.
+Probably should divide it to two files: One more strict with updateson all commits and merges and one more free.
+
 I have set up the serverless project.
 Defined db-tables.
 Added stumps for (most of) the required functions.
@@ -76,4 +79,17 @@ One with current note, one with history, one trashcan.
 
 4: Or, again two tables: My first option but with a trashcan where I move notes, history and all, on delete.
 
+UPDATE: Ok, it seems I just have to implement the trashcan functionallity. I'll start with just a 'deleted' property, I think.
+Maybe I'll add the history later.
 -------------------------------------------------------------------
+
+-------------------------------------------------------------------
+Dates! How? I think I'll use UTC.
+- I just converts the Date to an isoString. Seems to be in UTC format.
+-------------------------------------------------------------------
+
+I have implemented verifyToken to postNote.
+And fixed the dates, now an isoString.
+Now notes gets the logged in user's userid.
+
+Now I need to fix getNotes to only fetch the logged in users notes.
