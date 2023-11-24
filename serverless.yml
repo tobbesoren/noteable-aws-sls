@@ -69,7 +69,7 @@ functions:
     handler: lambdaFunctions/updateNote/index.handler
     events:
       - httpApi:
-          path: '/api/notes'
+          path: '/api/notes/{noteId}'
           method: PUT
 
 resources:

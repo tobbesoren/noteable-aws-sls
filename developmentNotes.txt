@@ -85,7 +85,7 @@ Maybe I'll add the history later.
 
 -------------------------------------------------------------------
 Dates! How? I think I'll use UTC.
-- I just converts the Date to an isoString. Seems to be in UTC format.
+- I just convert the Date to an isoString. Seems to be in UTC format.
 -------------------------------------------------------------------
 
 I have implemented verifyToken to postNote.
@@ -100,3 +100,7 @@ Added archiveNote, that sets isDeleted to true.
 And unArchiveNote, which resets isDeleted to false.
 
 Added a getArchivedNotes function.
+
+upDateNote works! I changed the endpoint to /api/notes/{noteId}, though.
+
+Next: deleteNote
