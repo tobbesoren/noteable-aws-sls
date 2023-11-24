@@ -39,3 +39,41 @@ Deployed.
 getNotes works, but it gets all notes since auth isn't implemented in postNote
 
 Switched to new branch: workingBranch - I need to get auth to work and probably will work on multiple files.
+
+--------------------------------------------------------------------
+I'm thinking of how to implement a trashcan and update history.
+So far I have four approaches to consider:
+1: Keep all notes in one table. Then I have to make the note object a bit more complex: It should have a property called 'deleted' or something which is false to start with and changes to true on deletion. All updates should be kept inside the object in a history property. Something like this:
+{
+    userId: "klfkajdgjhaevjkd758gf",
+    noteId: "aslh67986798asfgjkadt",
+    createdAt: "2023-11-24",//well, maybe a Date object
+    modifiedAt: "2023-11-28", // Latest updated
+    title: "Example", // Here is the latest update
+    text: "This is just an example!", // Here is the latest update
+    deleted: false,
+    history: { // Here are the earlier versions
+        {
+            modifiedAt: "2023-11-24", // First version
+            title: "Exmpel",
+            text: "Det här är ett exempel"
+        },
+        {
+            modifiedAt: "2023-11-25", // second
+            title: "Exempel",
+            text: "Det här är bara ett exempel"
+        },
+    }
+}
+This is pretty straightforward, but the Note objects could grow in size. Because of this I think the other approach might work better:
+
+2: I could move the history to a separate table. But what should the key be? I am using userId and noteId as key for my notes table.
+In the history table, there will be more than one note with a
+specific id. So I should probably use the mofifiedAt property. Or I could make a more complex object, like in the first approach. I am leaning towards this at the moment.
+
+3: Or should I have three tables?
+One with current note, one with history, one trashcan.
+
+4: Or, again two tables: My first option but with a trashcan where I move notes, history and all, on delete.
+
+-------------------------------------------------------------------
