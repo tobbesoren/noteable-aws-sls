@@ -106,3 +106,5 @@ upDateNote works! I changed the endpoint to /api/notes/{noteId}, though.
 deleteArchivedNote seems to work, too!
 
 I should add a check so only an unarchived note can be updated!
+
+Then it is time to think about error handling.

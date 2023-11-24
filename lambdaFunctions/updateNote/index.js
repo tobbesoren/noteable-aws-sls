@@ -19,16 +19,16 @@ const updateNote = async (event, context) => {
     Object.keys(updateAttributes)
       .map((attributeName) => `#${attributeName} = :${attributeName}`)
       .join(", ");
-      console.log(updateExpression)
+  console.log(updateExpression);
 
   let expressionAttributeValues = Object.keys(updateAttributes).reduce(
     (values, attributeName) => {
       values[`:${attributeName}`] = updateAttributes[attributeName];
       return values;
     },
-    {":modifiedAt": modifiedAt}
+    { ":modifiedAt": modifiedAt }
   );
-  console.log(expressionAttributeValues)
+  console.log(expressionAttributeValues);
 
   let expressionAttributeNames = Object.keys(updateAttributes).reduce(
     (values, attributeName) => {
