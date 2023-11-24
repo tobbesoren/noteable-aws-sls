@@ -92,4 +92,4 @@ I have implemented verifyToken to postNote.
 And fixed the dates, now an isoString.
 Now notes gets the logged in user's userid.
 
-Now I need to fix getNotes to only fetch the logged in users notes.
+I fixed getNotes to only fetch the logged in user's notes.
