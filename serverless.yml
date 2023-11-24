@@ -44,12 +44,26 @@ functions:
           path: '/api/notes'
           method: GET
 
-  deleteNote:
-    handler: lambdaFunctions/deleteNote/index.handler
+  getArchivedNotes:
+    handler: lambdaFunctions/getArchivedNotes/index.handler
     events:
       - httpApi:
-          path: '/api/notes'
-          method: DELETE
+          path: '/api/notes/archived'
+          method: GET
+
+  archiveNote:
+    handler: lambdaFunctions/archiveNote/index.handler
+    events:
+      - httpApi:
+          path: '/api/notes/archive'
+          method: PATCH
+
+  unArchiveNote:
+    handler: lambdaFunctions/unArchiveNote/index.handler
+    events:
+      - httpApi:
+          path: '/api/notes/unArchive'
+          method: PATCH
   
   updateNote:
     handler: lambdaFunctions/updateNote/index.handler
