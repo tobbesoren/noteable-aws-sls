@@ -18,7 +18,7 @@ const getNotes = async (event, context) => {
         FilterExpression: "userId = :userId AND isDeleted = :isDeleted",
         ExpressionAttributeValues: {
           ":userId": userId,
-          ":isDeleted": false,
+          ":isDeleted": true,
         },
       })
       .promise();

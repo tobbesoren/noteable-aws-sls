@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const { secret } = require("../secret")
+const { secret } = require("../secret");
 
 const validateToken = {
   before: async (request) => {
@@ -7,10 +7,10 @@ const validateToken = {
       const token = request.event.headers.authorization.replace("Bearer ", "");
 
       if (!token) throw new Error();
-
+      console.log(token);
       const data = jwt.verify(token, secret);
 
-      request.event.id = data.id;
+      request.event.userId = data.id;
       request.event.username = data.username;
 
       return request.response;

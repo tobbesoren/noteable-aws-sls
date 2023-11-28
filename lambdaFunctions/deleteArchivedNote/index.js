@@ -1,36 +1,39 @@
 const AWS = require("aws-sdk");
-const middy = require("@middy/core");
 const db = new AWS.DynamoDB.DocumentClient();
 
+const middy = require("@middy/core");
 const { validateToken } = require("../../middleware/auth");
 const { sendResponse } = require("../../responses/sendResponse");
 
-const getNotes = async (event, context) => {
+const deleteArchivedNote = async (event, context) => {
   if (event?.error && event.error === "401") {
     return sendResponse(401, { success: false, message: "Invalid token" });
   }
+
   const userId = event.userId;
+  const noteId = JSON.parse(event.body).noteId;
 
   try {
-    const { Items } = await db
-      .scan({
+    await db
+      .delete({
         TableName: "noteableNotes",
-        FilterExpression: "userId = :userId AND isDeleted = :isDeleted",
+        Key: { userId: userId, noteId: noteId },
+        ConditionExpression: "isDeleted = :isDeleted",
         ExpressionAttributeValues: {
-          ":userId": userId,
-          ":isDeleted": false,
-        },
+          ":isDeleted": true,
+        }
       })
       .promise();
-    return sendResponse(200, { success: true, notes: Items });
+    return sendResponse(200, { success: true, message: "Note deleted" });
   } catch (error) {
-    return sendResponse(400, {
+    return sendResponse(500, {
       success: false,
-      message: "Could not get notes",
+      message: "Could not delete note",
+      error: error,
     });
   }
 };
 
-const handler = middy(getNotes).use(validateToken);
+const handler = middy(deleteArchivedNote).use(validateToken);
 
 module.exports = { handler };
