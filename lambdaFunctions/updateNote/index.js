@@ -26,7 +26,7 @@ const updateNote = async (event, context) => {
       values[`:${attributeName}`] = updateAttributes[attributeName];
       return values;
     },
-    { ":modifiedAt": modifiedAt }
+    { ":modifiedAt": modifiedAt, ":isDeleted": false }
   );
   console.log(expressionAttributeValues);
 
@@ -45,6 +45,7 @@ const updateNote = async (event, context) => {
         Key: { userId: userId, noteId: noteId },
         ReturnValues: "ALL_NEW",
         UpdateExpression: updateExpression,
+        ConditionExpression: "isDeleted = :isDeleted",
         ExpressionAttributeValues: expressionAttributeValues,
         ExpressionAttributeNames: expressionAttributeNames,
       })

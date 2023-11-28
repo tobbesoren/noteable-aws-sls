@@ -79,7 +79,7 @@ One with current note, one with history, one trashcan.
 
 4: Or, again two tables: My first option but with a trashcan where I move notes, history and all, on delete.
 
-UPDATE: Ok, it seems I just have to implement the trashcan functionallity. I'll start with just a 'deleted' property, I think.
+UPDATE: Ok, it seems I just have to implement the trashcan functionallity. I'll start with just a 'isDeleted' property, I think.
 Maybe I'll add the history later.
 -------------------------------------------------------------------
 
@@ -105,8 +105,76 @@ upDateNote works! I changed the endpoint to /api/notes/{noteId}, though.
 
 deleteArchivedNote seems to work, too!
 
-I should add a check so only an unarchived note can be updated!
+Now only an unarchived note can be updated.
 
 Then it is time to think about error handling.
 
-I need to update my gitHob token!
+I need to update my gitHob token! -Done
+
+----------------------------------------------------------------
+Thoughts on error handling:
+
+Step one: check that the provided JSON is in valid format.
+I should do this in middleware, I think. Make sure to cover all possible cases: Missing JSON, missing property/ies, wrong type/s,
+additional (garbage) properties, not a JSON. Make sure the fields
+adhere to limitations.
+
+signUp:
+{
+	"username": string(min 3 max 20 chars,  (a-z, A-Z, 0-9, _)),
+	"password": string(min 8 max 25 chars), (a-z, A-Z, 0-9, , !, @, #, $, %, ^, &, *)
+	"firstName": string (min 1 max 50 chars),
+	"lastName": string (min 1 max 50 chars)
+}
+
+logIn:
+{
+    userName: string,
+    password: string
+}
+
+postNote:
+{
+	"title": string(max 50 chars),
+	"text": string (max 300 chars)
+}
+
+getNotes:
+(no JSON)
+
+archiveNote:
+{
+	"noteId": string (length: 21 chars (A-Za-z0-9_-.))
+}
+
+unArchiveNote:
+{
+	"noteId": string (length: 21 chars (A-Za-z0-9_-.))
+}
+
+getArchivedNotes:
+(no JSON)
+
+updateNote:
+{
+	"title": string(max 50 chars), // Optional
+	"text": string (max 300 chars) // Optional
+} // At least one of the properties must be provided
+
+deleteArchivedNote:
+{
+	"noteId": string (length: 21 chars (A-Za-z0-9_-.))
+}
+-------------------------------------------------------------------
+
+Did some research. By installing a couple of libraries I should be able to validate the JSON:s without writing all validation code myself:
+
+npm install @middy/http-json-body-parser
+
+npm install ajv
+
+ajv is a JSON schema validator for javascript which let me define the structure of my JSON:s. Can be used with json-body-parser to validate the input.
+I need to create JSON schema files with the definitions.
+
+I wonder if json-body-parser needs to be downgraded to work with commonJS? I guess I'm about to find out.
+
