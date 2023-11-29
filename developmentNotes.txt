@@ -178,3 +178,49 @@ I need to create JSON schema files with the definitions.
 
 I wonder if json-body-parser needs to be downgraded to work with commonJS? I guess I'm about to find out.
 
+Yeah, I downgraded.
+
+And added a middy function to handle errors.
+Installed http-errors to be able to throw custom http errors.
+Not sure it is necessary, but...
+
+Now, if any of my middleware functions throws an error, it is catched by my onError function and some useful info hopefully
+return to the caller.
+
+I only implemented it in postNote so far.
+
+The format for the returned info looks like this:
+{
+    success: false,
+    statusCode: 401 // or whatever
+    errorType: "ErrorType",
+    errorMessage: "A useful message"
+}
+
+In errorHandler, I add a message to the error from json-body-parser
+because it didn't provide any.
+
+By handling the errors here, I can remove the error check I had in the postNote lambda function. Now it isn't executed if the token validation fails (or a proper JSON isn't provided.)
+
+Now I need to add a JSON validation function that checks that all required properties are present and valid.
+
+-Added validateJsonSchema functions for all lambda functions that
+takes a Json.
+
+-Now all functions run the middy functions they need
+
+Note: I'm also thinking of changing the endpoint to updateNote to be
+consistent with the other endpoints: provide noteid in JSON instead
+of in the path.
+
+-Changed this too!
+
+Now I think all endpoints are done, webTokens are validated and JSONs are checked.
+
+I know I should check if a username is taken at signUp.
+
+I could also create a general validateJsonSchema that takes a schema
+as a property instead of having a lot of duplicate code...
+
+We'll see.
+

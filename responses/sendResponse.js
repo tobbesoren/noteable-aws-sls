@@ -4,7 +4,7 @@ function sendResponse(code, response) {
         headers: {
             "Content-type": "application/json",
             'Access-Control-Allow-Origin': '*', 
-            'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE',
+            'Access-Control-Allow-Methods': 'GET, POST, PUT, PATCH, DELETE',
             'Access-Control-Allow-Headers': 'Content-Type'  
         },
         body: JSON.stringify(response)

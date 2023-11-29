@@ -69,7 +69,7 @@ functions:
     handler: lambdaFunctions/updateNote/index.handler
     events:
       - httpApi:
-          path: '/api/notes/{noteId}'
+          path: '/api/notes'
           method: PUT
 
   deleteArchivedNote:
