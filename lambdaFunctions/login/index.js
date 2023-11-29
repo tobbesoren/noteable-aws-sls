@@ -22,7 +22,7 @@ async function getUser(username) {
     }
   } catch (error) {
     console.error(error);
-    return { success: false, message: "Database error", error: error };
+    return { success: false, message: "Database error", };
   }
 }
 
@@ -44,7 +44,7 @@ async function login(username, password) {
   const token = jwt.sign(
     { id: user.userId, username: user.username },
     secret,
-    { expiresIn: 3600 }
+    { expiresIn: "24h" } // I need more time...
   );
   return { success: true, message: "Login successful", token: token };
 }
