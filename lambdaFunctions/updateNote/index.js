@@ -1,17 +1,20 @@
 const AWS = require("aws-sdk");
-const db = new AWS.DynamoDB.DocumentClient();
-
 const middy = require("@middy/core");
+const jsonBodyParser = require("@middy/http-json-body-parser");
+
 const { validateToken } = require("../../middleware/auth");
 const { sendResponse } = require("../../responses/sendResponse");
+const { errorHandler } = require("../../middleware/errorHandler");
+const {
+  validateUpdateNoteJsonSchema,
+} = require("../../middleware/validateUpdateNoteJsonSchema");
 
-const updateNote = async (event, context) => {
-  if (event?.error && event.error === "401") {
-    return sendResponse(401, { success: false, message: "Invalid token" });
-  }
-  const updateAttributes = JSON.parse(event.body);
+const db = new AWS.DynamoDB.DocumentClient();
+
+const updateNote = async (event) => {
+  const { noteId, ...updateAttributes } = event.body;
   const userId = event.userId;
-  const { noteId } = event.pathParameters;
+
   const modifiedAt = new Date().toISOString();
 
   const updateExpression =
@@ -19,7 +22,6 @@ const updateNote = async (event, context) => {
     Object.keys(updateAttributes)
       .map((attributeName) => `#${attributeName} = :${attributeName}`)
       .join(", ");
-  console.log(updateExpression);
 
   let expressionAttributeValues = Object.keys(updateAttributes).reduce(
     (values, attributeName) => {
@@ -54,20 +56,21 @@ const updateNote = async (event, context) => {
     return sendResponse(200, {
       success: true,
       message: "Note is updated",
-      updateExpression: updateExpression,
-      expressionAttributeNames: expressionAttributeNames,
-      expressionAttributeValues: expressionAttributeValues,
       note: response.Attributes,
     });
   } catch (error) {
     return sendResponse(error.statusCode, {
       success: false,
-      message: "Could not update note",
-      error: error,
+      message: "Could not update note: " + error.message,
+      
     });
   }
 };
 
-const handler = middy(updateNote).use(validateToken);
+const handler = middy(updateNote)
+  .use(validateToken)
+  .use(jsonBodyParser())
+  .use(validateUpdateNoteJsonSchema)
+  .onError(errorHandler);
 
 module.exports = { handler };

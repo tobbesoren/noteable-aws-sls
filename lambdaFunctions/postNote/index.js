@@ -8,8 +8,9 @@ const db = new AWS.DynamoDB.DocumentClient();
 const { sendResponse } = require("../../responses/sendResponse");
 const { validateToken } = require("../../middleware/auth");
 const { errorHandler } = require("../../middleware/errorHandler");
+const { validatePostNoteJsonSchema} = require("../../middleware/validatePostNoteJsonSchema")
 
-const postNote = async (event, context) => {
+const postNote = async (event) => {
   
   const note = event.body;
 
@@ -45,6 +46,7 @@ const postNote = async (event, context) => {
 const handler = middy(postNote)
   .use(validateToken)
   .use(jsonBodyParser())
+  .use(validatePostNoteJsonSchema)
   .onError(errorHandler);
 
 module.exports = { handler };

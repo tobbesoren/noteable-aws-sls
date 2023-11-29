@@ -3,12 +3,10 @@ const middy = require("@middy/core");
 const db = new AWS.DynamoDB.DocumentClient();
 
 const { validateToken } = require("../../middleware/auth");
+const { errorHandler } = require("../../middleware/errorHandler");
 const { sendResponse } = require("../../responses/sendResponse");
 
-const getNotes = async (event, context) => {
-  if (event?.error && event.error === "401") {
-    return sendResponse(401, { success: false, message: "Invalid token" });
-  }
+const getNotes = async (event) => {
   const userId = event.userId;
 
   try {
@@ -31,6 +29,6 @@ const getNotes = async (event, context) => {
   }
 };
 
-const handler = middy(getNotes).use(validateToken);
+const handler = middy(getNotes).use(validateToken).onError(errorHandler);
 
 module.exports = { handler };
