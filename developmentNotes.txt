@@ -72,14 +72,14 @@ This is pretty straightforward, but the Note objects could grow in size. Because
 
 2: I could move the history to a separate table. But what should the key be? I am using userId and noteId as key for my notes table.
 In the history table, there will be more than one note with a
-specific id. So I should probably use the mofifiedAt property. Or I could make a more complex object, like in the first approach. I am leaning towards this at the moment.
+specific id. So I should probably use the modifiedAt property. Or I could make a more complex object, like in the first approach. I am leaning towards this at the moment.
 
 3: Or should I have three tables?
 One with current note, one with history, one trashcan.
 
 4: Or, again two tables: My first option but with a trashcan where I move notes, history and all, on delete.
 
-UPDATE: Ok, it seems I just have to implement the trashcan functionallity. I'll start with just a 'isDeleted' property, I think.
+UPDATE: Ok, it seems I just have to implement the trashcan functionallity. I'll start with just an 'isDeleted' property, I think.
 Maybe I'll add the history later.
 -------------------------------------------------------------------
 
@@ -215,12 +215,24 @@ of in the path.
 
 -Changed this too!
 
+----------------------------------------------------------------
 Now I think all endpoints are done, webTokens are validated and JSONs are checked.
 
 I know I should check if a username is taken at signUp.
 
 I could also create a general validateJsonSchema that takes a schema
-as a property instead of having a lot of duplicate code...
+as a property instead of having a lot of duplicate code, but...
 
 We'll see.
 
+I definitely need to change the read me!
+And add some comments.
+
+Oh, I must not forget the Insomnia file.
+----------------------------------------------------------------
+
+Now username availablity is checked on signUp.
+
+Exported Insomnia requests and added to project.
+
+Updated README.

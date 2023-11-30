@@ -1,58 +1,197 @@
-# notes API
+# noteable API
 
-## Instruktioner
+## Info
 
-Du ska i denna övning göra ett API för att spara anteckningar. Anteckningarna är kopplade till specifik användare, så det ska bara gå att komma åt anteckningar som är kopplade till den just nu inloggade användaren. Du ska använda middy som middleware för att skydda de endpoints som kräver inloggning.
+This is an excersise in API development, using AWS.
+It is an API for storing and retrieving notes in a dynamoDb
+database. The user need to sign up and login to an account.
+Then they can post notes, archive/unarchive notes, update notes,
+delete archived notes and of course read notes.
 
-### Tekniker
+## Endpoints
 
-API Gateway
-Lambda
-Dynamodb
-Middy
 
-### Endpoints
 
-Alla endpoints förutom skapa konto och logga in kräver att man är inloggad.
-
-|  Endpoint |  Metod |  Beskrivning |
+|  Endpoint |  Method |  Description |
 |---|---|---|
-| `/api/notes` | `GET` | Hämta anteckningar |
-| `/api/notes` | `POST` | Spara en anteckning |
-| `/api/notes` | `PUT` | Ändra en anteckning |
-| `/api/notes` | `DELETE` | Ta bort en anteckning |
-| `/api/user/signup` | `POST` | Skapa konto |
-| `/api/user/login` | `POST` | Logga in |
+| `/api/user/signUp` | `POST` | Create account |
+| `/api/user/login` | `POST` | Login |
+| `/api/notes` | `POST` | Post a note |
+| `/api/notes` | `GET` | Get all notes for logged in user|
+| `/api/notes/archive` | `PATCH` | Archive note |
+| `/api/notes/unArchive` | `PATCH` | UnArchive note |
+| `/api/notes/archived` | `GET` | Get archived notes |
+| `/api/notes` | `PUT` | Update note |
+| `/api/notes/archived` | `DELETE` | Delete archived note |
 
-**Note - objekt**
 
-| Nyckel | Värde | Beskrivning |
+### JSON schemas for the endpoints
+
+**signUp**
+```js
+    {
+      type: "object",
+      properties: {
+        username: {
+          type: "string",
+          minLength: 3,
+          maxLength: 20,
+          pattern: "^[a-zA-Z0-9_]+$",
+        },
+        password: {
+          type: "string",
+          minLength: 8,
+          maxLength: 25,
+          pattern: "^[a-zA-Z0-9!@#$%^&*]+$",
+        },
+        firstName: {
+          type: "string",
+          minLength: 1,
+          maxLength: 50,
+          pattern: "^[a-zA-Z/'/´/`åäöÅÄÖœæøÆØ]+$",
+        },
+        lastName: {
+          type: "string",
+          minLength: 1,
+          maxLength: 50,
+          pattern: "^[a-zA-Z/'/´/`åäöÅÄÖœæøÆØ]+$",
+        },
+      },
+      required: ["username", "password", "firstName", "lastName"],
+      additionalProperties: false,
+    }
+```
+
+**login**
+```js
+    {
+      type: "object",
+      properties: {
+        username: {
+          type: "string",
+          maxLength: 100,
+        },
+        password: {
+          type: "string",
+          maxLength: 100,
+        },
+      },
+      required: ["username", "password"],
+      additionalProperties: false,
+    }
+```
+
+**postNote**
+```js
+    {
+      type: "object",
+      properties: {
+        title: { type: "string", maxLength: 50 },
+        text: { type: "string", maxLength: 300 },
+      },
+      required: ["title", "text"],
+      additionalProperties: false,
+    }
+```
+
+**getNotes**
+
+no JSON
+
+**archiveNote**
+```js
+    {
+      type: "object",
+      properties: {
+        noteId: { type: "string", minLength: 21, maxLength: 21 },
+      },
+      required: ["noteId"],
+      additionalProperties: false,
+    } 
+```
+
+**unArchiveNote**
+```js
+    {
+      type: "object",
+      properties: {
+        noteId: { type: "string", minLength: 21, maxLength: 21 },
+      },
+      required: ["noteId"],
+      additionalProperties: false,
+    }
+```
+
+**getArchivedNotes**
+
+no Json
+
+**updateNote**
+```js
+    {
+      type: "object",
+      properties: {
+        noteId: { type: "string", minLength: 21, maxLength: 21 },
+        title: {type: "string", maxLength: 50},
+        text: { type: "string", maxLength: 300}
+      },
+      required: ["noteId"],
+      anyOf: [
+        { required: ["title"] },
+        { required: ["text"] },
+      ],
+      additionalProperties: false,
+    }
+```
+
+**deleteArchivedNote**
+```js
+    {
+      type: "object",
+      properties: {
+        noteId: { type: "string", minLength: 21, maxLength: 21 },
+      },
+      required: ["noteId"],
+      additionalProperties: false,
+    }
+```
+
+
+## Database
+
+Two tables are used:
+
+*noteableNotes:*
+
+for notes. It uses userId and noteId as a composite key.
+
+**Note object**
+| Key | Value type | Description |
 |---|---|---|
-| `id` | `String` | Ett genererat ID för denna anteckning. |
-| `title` | `String` |  Titeln på anteckningen. Max 50 tecken. |
-| `text` | `String` | Själva anteckningstexten, max 300 tecken. |
-| `createdAt` | `Date` | När anteckningen skapades. |
-| `modifiedAt` | `Date` | När anteckningen sist modifierades. |
+| `userId` | `String` | A generated ID for the user |
+| `noteId` | `String` | A generated ID for the note |
+| `title` | `String` |  Note title. Max 50 chars. |
+| `text` | `String` | The actual note text. Max 300 chars. |
+| `createdAt` | `ISO-string` | Creation time. UTC. |
+| `modifiedAt` | `ISO-string` | Last modified. UTC |
+| `isDeleted` | `Boolean` |  If true, the note is archived.|
 
-### Felhantering
 
-Alla API-resurser ska returnera JSON och/eller en HTTP statuskod:
+*noteableAccounts:*
 
-**200 (OK)** - Om servern lyckats med att göra det som resursen motsvarar.
+for accounts. It uses username as key.
 
-**400 (Bad request)** - Om requestet är felaktigt gjort, så att servern inte kan fortsätta. Exempel: Att frontend skickar med 
-felaktig data i body till servern.
+**Account object**
+| Key | Value type | Description |
+|---|---|---|
+| `userId` | `String` | A generated ID for the user |
+| `username` | `String` | Unique username. 3-20 chars. |
+| `password` | `String` | Hashed password. |
+| `firstName` | `String` | User's first name. Max 50 chars. |
+| `lastName` | `String` | User's last name. Max 50 chars. |
 
-**401 (Unauthorized)** - Om giltig inloggning inte finns
 
-**404 (Not found)** - Om resursen eller objektet som efterfrågas inte finns.
 
-**500 (internal server error)** - Om ett fel inträffar på servern. Använd catch för att fånga det.
 
-### Betygskriterier
 
-**G:** 
-För godkänta ska API:et fungera enligt ovan. 
 
-**VG:** 
-För vg ska dessutom en återställningsfunktionalitet implementeras: Skapa funktionalitet för användare att återställa borttagna anteckningar eller ångra ändringar genom att införa en återställningspapperskorg eller en återställningsmekanism för att återvinna borttagna data. Alla indata till alla endpoints ska även valideras.

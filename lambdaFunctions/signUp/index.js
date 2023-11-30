@@ -42,7 +42,7 @@ async function createAccount(
 }
 
 // Not used yet! Should be modified and used to check if a userName is already taken
-async function getUser(username) {
+async function checkUsername(username) {
   try {
     const user = await db
       .get({
@@ -53,19 +53,24 @@ async function getUser(username) {
       })
       .promise();
     if (user?.Item) {
-      return { success: true, message: "User found!", user: user.Item };
+      return { success: false, message: "Username unavailable" };
     } else {
-      return { success: false, message: "Incorrect username and/or password" }; // we don't want to tell the user which one is wrong of the two!
+      return { success: true, message: "Username available" };
     }
   } catch (error) {
     console.error(error);
-    return { success: false, message: "Database error", };
+    return { success: false, message: "Database error" };
   }
 }
 
 async function createLogInDetails(username, password, firstName, lastName) {
   // check if username already exists
   // if username exists => return {error}
+  const userNameAvailable = await checkUsername(username);
+
+  if (!userNameAvailable.success) {
+    return userNameAvailable;
+  }
 
   const hashedPassword = await bcrypt.hash(password, 10);
   
