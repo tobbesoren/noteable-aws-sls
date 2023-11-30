@@ -1,0 +1,238 @@
+Here I try to jot down what I do in the project, thoughts on what to do later and different approaches to problems I encounter.
+Probably should divide it to two files: One more strict with updateson all commits and merges and one more free.
+
+I have set up the serverless project.
+Defined db-tables.
+Added stumps for (most of) the required functions.
+Added endpoints in serverless.yml
+Added boilerplate code for signUp and login, and sendResponse.
+
+Switched to postNote branch.
+
+Fixed import errors
+
+Deployed to aws:
+- signUp works
+-logIn works
+(Not much error handling yet)
+
+Added basic postNote function.
+Deployed
+Committed  and pushed to postNote branch:
+postNoteAddedFixedImportErrors
+
+Tested with Insomnia:
+Now it is possible to post a note
+
+Merged and deleted branch postNote
+
+Switched to getNotes branch
+
+Added getNotes
+Added verifyToken
+
+Committed and pushed to getNotes branch:
+addedGetNotesAndVerifyToken
+
+Merged and deleted getNotes branch
+
+Fixed small bugs, pushed directly to main.
+
+Deployed.
+getNotes works, but it gets all notes since auth isn't implemented in postNote
+
+Switched to new branch: workingBranch - I need to get auth to work and probably will work on multiple files.
+
+--------------------------------------------------------------------
+I'm thinking of how to implement a trashcan and update history.
+So far I have four approaches to consider:
+1: Keep all notes in one table. Then I have to make the note object a bit more complex: It should have a property called 'deleted' or something which is false to start with and changes to true on deletion. All updates should be kept inside the object in a history property. Something like this:
+{
+    userId: "klfkajdgjhaevjkd758gf",
+    noteId: "aslh67986798asfgjkadt",
+    createdAt: "2023-11-24",//well, maybe a Date object
+    modifiedAt: "2023-11-28", // Latest updated
+    title: "Example", // Here is the latest update
+    text: "This is just an example!", // Here is the latest update
+    deleted: false,
+    history: { // Here are the earlier versions
+        {
+            modifiedAt: "2023-11-24", // First version
+            title: "Exmpel",
+            text: "Det här är ett exempel"
+        },
+        {
+            modifiedAt: "2023-11-25", // second
+            title: "Exempel",
+            text: "Det här är bara ett exempel"
+        },
+    }
+}
+This is pretty straightforward, but the Note objects could grow in size. Because of this I think the other approach might work better:
+
+2: I could move the history to a separate table. But what should the key be? I am using userId and noteId as key for my notes table.
+In the history table, there will be more than one note with a
+specific id. So I should probably use the modifiedAt property. Or I could make a more complex object, like in the first approach. I am leaning towards this at the moment.
+
+3: Or should I have three tables?
+One with current note, one with history, one trashcan.
+
+4: Or, again two tables: My first option but with a trashcan where I move notes, history and all, on delete.
+
+UPDATE: Ok, it seems I just have to implement the trashcan functionallity. I'll start with just an 'isDeleted' property, I think.
+Maybe I'll add the history later.
+-------------------------------------------------------------------
+
+-------------------------------------------------------------------
+Dates! How? I think I'll use UTC.
+- I just convert the Date to an isoString. Seems to be in UTC format.
+-------------------------------------------------------------------
+
+I have implemented verifyToken to postNote.
+And fixed the dates, now an isoString.
+Now notes gets the logged in user's userid.
+
+I fixed getNotes to only fetch the logged in user's notes.
+
+Added isDeleted property and updated getNotes to only get notes that isn't deleted.
+
+Added archiveNote, that sets isDeleted to true.
+And unArchiveNote, which resets isDeleted to false.
+
+Added a getArchivedNotes function.
+
+upDateNote works! I changed the endpoint to /api/notes/{noteId}, though.
+
+deleteArchivedNote seems to work, too!
+
+Now only an unarchived note can be updated.
+
+Then it is time to think about error handling.
+
+I need to update my gitHob token! -Done
+
+----------------------------------------------------------------
+Thoughts on error handling:
+
+Step one: check that the provided JSON is in valid format.
+I should do this in middleware, I think. Make sure to cover all possible cases: Missing JSON, missing property/ies, wrong type/s,
+additional (garbage) properties, not a JSON. Make sure the fields
+adhere to limitations.
+
+signUp:
+{
+	"username": string(min 3 max 20 chars,  (a-z, A-Z, 0-9, _)),
+	"password": string(min 8 max 25 chars), (a-z, A-Z, 0-9, , !, @, #, $, %, ^, &, *)
+	"firstName": string (min 1 max 50 chars),
+	"lastName": string (min 1 max 50 chars)
+}
+
+logIn:
+{
+    userName: string,
+    password: string
+}
+
+postNote:
+{
+	"title": string(max 50 chars),
+	"text": string (max 300 chars)
+}
+
+getNotes:
+(no JSON)
+
+archiveNote:
+{
+	"noteId": string (length: 21 chars (A-Za-z0-9_-.))
+}
+
+unArchiveNote:
+{
+	"noteId": string (length: 21 chars (A-Za-z0-9_-.))
+}
+
+getArchivedNotes:
+(no JSON)
+
+updateNote:
+{
+	"title": string(max 50 chars), // Optional
+	"text": string (max 300 chars) // Optional
+} // At least one of the properties must be provided
+
+deleteArchivedNote:
+{
+	"noteId": string (length: 21 chars (A-Za-z0-9_-.))
+}
+-------------------------------------------------------------------
+
+Did some research. By installing a couple of libraries I should be able to validate the JSON:s without writing all validation code myself:
+
+npm install @middy/http-json-body-parser
+
+npm install ajv
+
+ajv is a JSON schema validator for javascript which let me define the structure of my JSON:s. Can be used with json-body-parser to validate the input.
+I need to create JSON schema files with the definitions.
+
+I wonder if json-body-parser needs to be downgraded to work with commonJS? I guess I'm about to find out.
+
+Yeah, I downgraded.
+
+And added a middy function to handle errors.
+Installed http-errors to be able to throw custom http errors.
+Not sure it is necessary, but...
+
+Now, if any of my middleware functions throws an error, it is catched by my onError function and some useful info hopefully
+return to the caller.
+
+I only implemented it in postNote so far.
+
+The format for the returned info looks like this:
+{
+    success: false,
+    statusCode: 401 // or whatever
+    errorType: "ErrorType",
+    errorMessage: "A useful message"
+}
+
+In errorHandler, I add a message to the error from json-body-parser
+because it didn't provide any.
+
+By handling the errors here, I can remove the error check I had in the postNote lambda function. Now it isn't executed if the token validation fails (or a proper JSON isn't provided.)
+
+Now I need to add a JSON validation function that checks that all required properties are present and valid.
+
+-Added validateJsonSchema functions for all lambda functions that
+takes a Json.
+
+-Now all functions run the middy functions they need
+
+Note: I'm also thinking of changing the endpoint to updateNote to be
+consistent with the other endpoints: provide noteid in JSON instead
+of in the path.
+
+-Changed this too!
+
+----------------------------------------------------------------
+Now I think all endpoints are done, webTokens are validated and JSONs are checked.
+
+I know I should check if a username is taken at signUp.
+
+I could also create a general validateJsonSchema that takes a schema
+as a property instead of having a lot of duplicate code, but...
+
+We'll see.
+
+I definitely need to change the read me!
+And add some comments.
+
+Oh, I must not forget the Insomnia file.
+----------------------------------------------------------------
+
+Now username availablity is checked on signUp.
+
+Exported Insomnia requests and added to project.
+
+Updated README.
