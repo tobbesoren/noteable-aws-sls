@@ -6,7 +6,7 @@ This is an excersise in API development, using AWS.
 It is an API for storing and retrieving notes in a dynamoDb
 database. The user need to sign up and login to an account.
 Then they can post notes, archive/unarchive notes, update notes,
-delete archived notes and ofcourse read notes.
+delete archived notes and of course read notes.
 
 ## Endpoints
 
