@@ -14,15 +14,16 @@ delete archived notes and ofcourse read notes.
 
 |  Endpoint |  Method |  Description |
 |---|---|---|
-| `/api/notes` | `GET` | Get all notes for logged in user|
-| `/api/notes` | `POST` | Post a note |
-| `/api/notes` | `PUT` | Update note |
-| `/api/notes/archived` | `DELETE` | Delete archived note |
 | `/api/user/signUp` | `POST` | Create account |
 | `/api/user/login` | `POST` | Login |
+| `/api/notes` | `POST` | Post a note |
+| `/api/notes` | `GET` | Get all notes for logged in user|
 | `/api/notes/archive` | `PATCH` | Archive note |
 | `/api/notes/unArchive` | `PATCH` | UnArchive note |
 | `/api/notes/archived` | `GET` | Get archived notes |
+| `/api/notes` | `PUT` | Update note |
+| `/api/notes/archived` | `DELETE` | Delete archived note |
+
 
 ### JSON schemas for the endpoints
 
@@ -94,6 +95,7 @@ delete archived notes and ofcourse read notes.
 ```
 
 **getNotes**
+
 no JSON
 
 **archiveNote**
@@ -121,6 +123,7 @@ no JSON
 ```
 
 **getArchivedNotes**
+
 no Json
 
 **updateNote**
@@ -157,7 +160,9 @@ no Json
 ## Database
 
 Two tables are used:
+
 *noteableNotes:*
+
 for notes. It uses userId and noteId as a composite key.
 
 **Note object**
@@ -173,6 +178,7 @@ for notes. It uses userId and noteId as a composite key.
 
 
 *noteableAccounts:*
+
 for accounts. It uses username as key.
 
 **Account object**
