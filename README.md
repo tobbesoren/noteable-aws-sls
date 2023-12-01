@@ -186,7 +186,7 @@ for accounts. It uses username as key.
 |---|---|---|
 | `userId` | `String` | A generated ID for the user |
 | `username` | `String` | Unique username. 3-20 chars. |
-| `password` | `String` | Hashed password. |
+| `password` | `String` | Hashed password. (The original password length is 8 - 25 chars.) |
 | `firstName` | `String` | User's first name. Max 50 chars. |
 | `lastName` | `String` | User's last name. Max 50 chars. |
 
