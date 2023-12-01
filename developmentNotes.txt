@@ -236,3 +236,25 @@ Now username availablity is checked on signUp.
 Exported Insomnia requests and added to project.
 
 Updated README.
+
+----------------------------------------------------------------
+
+Had a Git scare where all my files where removed from my repository
+when I made a commit, but on re-commiting they showed up again.
+
+-----------------------------------------------------------------
+
+I think I am done, but will do some testing later to make sure
+I didn't break anything.
+
+------------------------------------------------------------------
+It seems to work - but I need to change getNotes and
+getArchivedNotes to .query instead of .scan!
+------------------------------------------------------------------
+
+changed to qeury to get notes.
+Added better error messages in updateNote, archiveNote, unArchiveNote, deleteArchivedNote when conditionExpression fails.
+
+-------------------------------------------------------------------
+
+Refactored: Now we just have one validateJsonSchema function which takes a schema as argument. The different schemas are moved to their own files.

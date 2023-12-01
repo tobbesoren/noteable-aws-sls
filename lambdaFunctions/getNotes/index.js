@@ -11,15 +11,17 @@ const getNotes = async (event) => {
 
   try {
     const { Items } = await db
-      .scan({
+      .query({
         TableName: "noteableNotes",
-        FilterExpression: "userId = :userId AND isDeleted = :isDeleted",
+        KeyConditionExpression: "userId = :userId",
+        FilterExpression: "isDeleted = :isDeleted",
         ExpressionAttributeValues: {
           ":userId": userId,
           ":isDeleted": false,
         },
       })
       .promise();
+
     return sendResponse(200, { success: true, notes: Items });
   } catch (error) {
     return sendResponse(400, {

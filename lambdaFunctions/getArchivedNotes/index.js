@@ -7,20 +7,21 @@ const { errorHandler } = require("../../middleware/errorHandler");
 const { sendResponse } = require("../../responses/sendResponse");
 
 const getArchivedNotes = async (event) => {
-  
   const userId = event.userId;
 
   try {
     const { Items } = await db
-      .scan({
+      .query({
         TableName: "noteableNotes",
-        FilterExpression: "userId = :userId AND isDeleted = :isDeleted",
+        KeyConditionExpression: "userId = :userId",
+        FilterExpression: "isDeleted = :isDeleted",
         ExpressionAttributeValues: {
           ":userId": userId,
           ":isDeleted": true,
         },
       })
       .promise();
+
     return sendResponse(200, { success: true, notes: Items });
   } catch (error) {
     return sendResponse(400, {
@@ -30,6 +31,8 @@ const getArchivedNotes = async (event) => {
   }
 };
 
-const handler = middy(getArchivedNotes).use(validateToken).onError(errorHandler);
+const handler = middy(getArchivedNotes)
+  .use(validateToken)
+  .onError(errorHandler);
 
 module.exports = { handler };

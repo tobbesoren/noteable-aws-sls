@@ -12,7 +12,7 @@ const errorHandler = async (request) => {
 
   if (request?.error) {
     return sendResponse(request.error.statusCode, {
-      handledBy: "errorHandler1",
+      //handledBy: "errorHandler1",
       success: false,
       errorType: request.error.name,
       errorMessage: request.error.message,
@@ -21,7 +21,7 @@ const errorHandler = async (request) => {
 
   // If something goes seriously wrong without a proper request.error
   return sendResponse(500, {
-    handledBy: "errorHandler2",
+    //handledBy: "errorHandler2",
     success: false,
     errorType: "InternalServerError",
     errorMessage: "Something went wrong...",

@@ -5,9 +5,8 @@ const jsonBodyParser = require("@middy/http-json-body-parser");
 const { validateToken } = require("../../middleware/auth");
 const { sendResponse } = require("../../responses/sendResponse");
 const { errorHandler } = require("../../middleware/errorHandler");
-const {
-  validateUpdateNoteJsonSchema,
-} = require("../../middleware/validateUpdateNoteJsonSchema");
+const { validateJsonSchema} = require("../../middleware/validateJsonSchema")
+const { updateNoteSchema } = require("../../jsonSchemas/updateNoteSchema");
 
 const db = new AWS.DynamoDB.DocumentClient();
 
@@ -59,6 +58,13 @@ const updateNote = async (event) => {
       note: response.Attributes,
     });
   } catch (error) {
+    if(error.message === "The conditional request failed") {
+      return sendResponse(error.statusCode, {
+        success: false,
+        message: "Could not update note: The note could not be found",
+        
+      });
+    }
     return sendResponse(error.statusCode, {
       success: false,
       message: "Could not update note: " + error.message,
@@ -70,7 +76,7 @@ const updateNote = async (event) => {
 const handler = middy(updateNote)
   .use(validateToken)
   .use(jsonBodyParser())
-  .use(validateUpdateNoteJsonSchema)
+  .use(validateJsonSchema(updateNoteSchema))
   .onError(errorHandler);
 
 module.exports = { handler };

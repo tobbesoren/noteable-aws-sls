@@ -6,7 +6,8 @@ const jsonBodyParser = require("@middy/http-json-body-parser");
 
 const { sendResponse } = require("../../responses/sendResponse");
 const { errorHandler } = require("../../middleware/errorHandler");
-const { validateSignUpJsonSchema} = require("../../middleware/validateSignUpJsonSchema")
+const { validateJsonSchema} = require("../../middleware/validateJsonSchema")
+const { signUpSchema } = require("../../jsonSchemas/signUpSchema");
 
 const db = new AWS.DynamoDB.DocumentClient();
 
@@ -41,7 +42,6 @@ async function createAccount(
   }
 }
 
-// Not used yet! Should be modified and used to check if a userName is already taken
 async function checkUsername(username) {
   try {
     const user = await db
@@ -65,7 +65,6 @@ async function checkUsername(username) {
 
 async function createLogInDetails(username, password, firstName, lastName) {
   // check if username already exists
-  // if username exists => return {error}
   const userNameAvailable = await checkUsername(username);
 
   if (!userNameAvailable.success) {
@@ -96,7 +95,7 @@ const signUp = async (event) => {
 
 const handler = middy(signUp)
   .use(jsonBodyParser())
-  .use(validateSignUpJsonSchema)
+  .use(validateJsonSchema(signUpSchema))
   .onError(errorHandler);
 
 module.exports = { handler };

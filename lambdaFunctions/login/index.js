@@ -7,8 +7,8 @@ const jsonBodyParser = require("@middy/http-json-body-parser");
 const { secret } = require("../../secret")
 const { sendResponse } = require("../../responses/sendResponse");
 const { errorHandler } = require("../../middleware/errorHandler");
-const { validateLogInJsonSchema} = require("../../middleware/validateLogInJsonSchema")
-
+const { validateJsonSchema} = require("../../middleware/validateJsonSchema")
+const { logInSchema } = require("../../jsonSchemas/logInSchema");
 const db = new AWS.DynamoDB.DocumentClient();
 
 async function getUser(username) {
@@ -64,7 +64,7 @@ const login = async (event, context) => {
 
 const handler = middy(login)
   .use(jsonBodyParser())
-  .use(validateLogInJsonSchema)
+  .use(validateJsonSchema(logInSchema))
   .onError(errorHandler);
 
 module.exports = { handler };

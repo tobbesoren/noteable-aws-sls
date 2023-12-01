@@ -5,7 +5,8 @@ const jsonBodyParser = require("@middy/http-json-body-parser");
 const { validateToken } = require("../../middleware/auth");
 const { sendResponse } = require("../../responses/sendResponse");
 const { errorHandler } = require("../../middleware/errorHandler");
-const { validateNoteIdJsonSchema} = require("../../middleware/validateNoteIdJsonSchema")
+const { validateJsonSchema} = require("../../middleware/validateJsonSchema")
+const { noteIdSchema } = require("../../jsonSchemas/noteIdSchema");
 
 const db = new AWS.DynamoDB.DocumentClient();
 
@@ -33,6 +34,13 @@ const unArchiveNote = async (event) => {
       message: "Note is restored",
     });
   } catch (error) {
+    if(error.message === "The conditional request failed") {
+      return sendResponse(error.statusCode, {
+        success: false,
+        message: "Could not restore note: The note could not be found",
+        
+      });
+    }
     return sendResponse(error.statusCode, {
       success: false,
       message: "Could not restore note: " + error.message,
@@ -44,7 +52,7 @@ const unArchiveNote = async (event) => {
 const handler = middy(unArchiveNote)
   .use(validateToken)
   .use(jsonBodyParser())
-  .use(validateNoteIdJsonSchema)
+  .use(validateJsonSchema(noteIdSchema))
   .onError(errorHandler);
 
 module.exports = { handler };

@@ -5,9 +5,8 @@ const jsonBodyParser = require("@middy/http-json-body-parser");
 const { validateToken } = require("../../middleware/auth");
 const { sendResponse } = require("../../responses/sendResponse");
 const { errorHandler } = require("../../middleware/errorHandler");
-const {
-  validateNoteIdJsonSchema,
-} = require("../../middleware/validateNoteIdJsonSchema");
+const { validateJsonSchema} = require("../../middleware/validateJsonSchema")
+const { noteIdSchema } = require("../../jsonSchemas/noteIdSchema");
 
 const db = new AWS.DynamoDB.DocumentClient();
 
@@ -28,6 +27,12 @@ const deleteArchivedNote = async (event) => {
       .promise();
     return sendResponse(200, { success: true, message: "Note deleted" });
   } catch (error) {
+    if(error.message === "The conditional request failed") {
+      return sendResponse(error.statusCode, {
+        success: false,
+        message: "Could not delete note: The note could not be found in archive",
+      });
+    }
     return sendResponse(error.statusCode, {
       success: false,
       message: "Could not delete note: " + error.message,
@@ -39,7 +44,7 @@ const deleteArchivedNote = async (event) => {
 const handler = middy(deleteArchivedNote)
   .use(validateToken)
   .use(jsonBodyParser())
-  .use(validateNoteIdJsonSchema)
+  .use(validateJsonSchema(noteIdSchema))
   .onError(errorHandler);
 
 module.exports = { handler };
