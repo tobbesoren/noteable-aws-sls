@@ -168,8 +168,8 @@ for notes. It uses userId and noteId as a composite key.
 **Note object**
 | Key | Value type | Description |
 |---|---|---|
-| `userId` | `String` | A generated ID for the user |
-| `noteId` | `String` | A generated ID for the note |
+| `userId` | `String` | The user's ID, which is generated on signUp. 21 chars. |
+| `noteId` | `String` | A generated ID for the note. 21 chars. |
 | `title` | `String` |  Note title. Max 50 chars. |
 | `text` | `String` | The actual note text. Max 300 chars. |
 | `createdAt` | `ISO-string` | Creation time. UTC. |
@@ -184,7 +184,7 @@ for accounts. It uses username as key.
 **Account object**
 | Key | Value type | Description |
 |---|---|---|
-| `userId` | `String` | A generated ID for the user |
+| `userId` | `String` | A generated ID for the user. 21 chars. |
 | `username` | `String` | Unique username. 3-20 chars. |
 | `password` | `String` | Hashed password. (The original password length is 8 - 25 chars.) |
 | `firstName` | `String` | User's first name. Max 50 chars. |
