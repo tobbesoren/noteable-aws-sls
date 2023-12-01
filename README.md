@@ -174,7 +174,7 @@ for notes. It uses userId and noteId as a composite key.
 | `text` | `String` | The actual note text. Max 300 chars. |
 | `createdAt` | `ISO-string` | Creation time. UTC. |
 | `modifiedAt` | `ISO-string` | Last modified. UTC |
-| `isDeleted` | `Boolean` |  If true, the note is archived.|
+| `isDeleted` | `Boolean` |  If true, it means the note is archived.|
 
 
 *noteableAccounts:*
